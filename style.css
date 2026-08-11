@@ -1,0 +1,129 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    height: 100vh;
+    overflow: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::webkit-scrollbar-thumb {
+    background: rgba(128,128,128,0.25);
+    border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+    background:transparent;
+}
+
+body.dark {
+    --bg: #0a0b0d;
+    --bg-gradient: none;
+    --sidebar-bg: #101114;
+    --modal-bg: #15171b;
+    --border: rgba(255,255,255,0.08);
+    --card-bg: rgba(255,255,255,0.03);
+    --text-primary: #f2f3f5;
+    --text-secondary: #9aa0ac;
+    --text-muted: #6b717c;
+    --input-bg: rgba(255,255,255,0.04);
+    --input-border: rgba(255,255,255,0.1);
+    --overlay: rgba(0,0,0,0.6);
+}
+
+body.light {
+    --bg: #f4f5f7;
+    --bg-gradient: radial-gradient(circle at 15% -10%, rgba(59,130,246,0.06), transparent 40%);
+    --sidebar-bg: rgba(255,255,255,0.7);
+    --modal-bg: #ffffff;
+    --border: rgba(0,0,0,0.08);
+    --card-bg: rgba(255,255,255,0.95);
+    --text-primary: #16181d;
+    --text-secondary: #5b616e;
+    --text-muted: #8a8f99;
+    --input-bg: #ffffff;
+    --input-border: rgba(0,0,0,0.12);
+    --overlay: rgba(0,0,0,0.6);
+}
+
+/*accent*/
+:root {
+    --accent: #3b82F6;
+}
+
+.app {
+    height: 100vh;
+    display:flex;
+    background: var(--bg);
+    background-image: var(--bg-gradient);
+    color: var(--text-primary);
+}
+
+/*sidebar*/
+.sidebar {
+    width: 224px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 18px 12px;
+    background: var(--sidebar-bg);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid var(--border);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 6px 20px 6px;
+}
+.brand-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.brand-name {
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 11px;
+    border-radius: 10px;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 560;
+    text-align: left;
+    font-family: inherit;
+    transition: background 0.12s, color 0.12s;
+}
+.nav-item:hover {
+    background: rgba(128,128,128,0.08);
+}
+.nav-item:active {
+    background: rgba(59,130,246,0.08);
+}
+.nav-item.active .star-icon {
+    fill: var(--accent);
+}
+.nav-spacer {
+    flex: 1;
+}
