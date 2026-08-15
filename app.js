@@ -478,3 +478,193 @@ function regenerate() {
   document.getElementById('genPreview').textContent =
     state.genPreview;
 }
+
+// settings
+
+function saveMasterPassword() {
+  const password1 = document.getElementById('masterPass1').value;
+  const password2 = document.getElementById('masterPass2').value;
+
+  if (password1.length < 4) {
+    addToast('Master password too short', true);
+    return;
+  }
+
+  if (password1 !== password2) {
+    addToast('Passwords do not match', true);
+    return;
+  }
+
+  state.masterSet = true;
+
+  persist();
+
+  document.getElementById('masterPass1').value = '';
+  document.getElementById('masterPass2').value = '';
+
+  document.getElementById('masterHint').textContent =
+    'A master password is set. You can change it below.';
+
+  document.getElementById('masterSaveBtn').textContent =
+    'Update master password';
+
+  addToast('Master password saved');
+}
+
+
+function toggleDarkMode() {
+  state.darkMode = !state.darkMode;
+
+  if (state.darkMode) {
+    document.body.className = 'dark';
+  } else {
+    document.body.className = 'light';
+  }
+
+  document
+    .getElementById('darkModeToggle')
+    .classList.toggle('active', state.darkMode);
+
+  persist();
+}
+
+
+function exportData() {
+  const data = JSON.stringify(state.passwords, null, 2);
+
+  const blob = new Blob([data], {
+    type: 'application/json'
+  });
+
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+
+  link.href = url;
+  link.download = 'passwords-export.json';
+
+  link.click();
+
+  URL.revokeObjectURL(url);
+
+  addToast('Export downloaded');
+}
+
+
+function importFile(file) {
+  const reader = new FileReader();
+
+  reader.onload = function (event) {
+    try {
+      const data = JSON.parse(event.target.result);
+
+      if (!Array.isArray(data)) {
+        throw new Error('Not an array');
+      }
+
+      const passwords = [];
+
+      data.forEach(function (item) {
+        passwords.push({
+          id: item.id || uid(),
+          site: item.site || 'Untitled',
+          url: item.url || '',
+          username: item.username || '',
+          password: item.password || '',
+          notes: item.notes || '',
+          favorite: !!item.favorite,
+          updatedAt: item.updatedAt || Date.now()
+        });
+      });
+
+      state.passwords = passwords.concat(state.passwords);
+
+      persist();
+
+      addToast('Imported ' + passwords.length + ' passwords');
+
+      render();
+    } catch (error) {
+      addToast('Invalid JSON file', true);
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+
+// delete confirmation
+
+function requestDelete(password) {
+  state.confirmAction = {
+    type: 'delete',
+    id: password.id,
+    site: password.site
+  };
+
+  document.getElementById('confirmTitle').textContent =
+    'Delete password?';
+
+  document.getElementById('confirmMessage').textContent =
+    'This will permanently delete the saved login for "' +
+    password.site +
+    '".';
+
+  document.getElementById('confirmYesBtn').textContent = 'Delete';
+
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+
+
+function requestClearAll() {
+  state.confirmAction = {
+    type: 'clearAll'
+  };
+
+  document.getElementById('confirmTitle').textContent =
+    'Clear all data?';
+
+  document.getElementById('confirmMessage').textContent =
+    'This permanently removes every saved password from this device.';
+
+  document.getElementById('confirmYesBtn').textContent =
+    'Clear all';
+
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+
+
+function cancelConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+
+  state.confirmAction = null;
+}
+
+
+function confirmYes() {
+  const action = state.confirmAction;
+
+  if (!action) {
+    return;
+  }
+
+  if (action.type === 'delete') {
+    state.passwords = state.passwords.filter(function (password) {
+      return password.id !== action.id;
+    });
+
+    addToast('Password deleted');
+  }
+
+  if (action.type === 'clearAll') {
+    state.passwords = [];
+
+    addToast('All data cleared');
+  }
+
+  persist();
+
+  cancelConfirm();
+
+  render();
+} 
