@@ -298,3 +298,183 @@ function copyText(text, name) {
       addToast('Copy failed', true);
     });
 }
+
+// password form
+let formState = {
+  site: '',
+  url: '',
+  username: '',
+  password: '',
+  notes: '',
+  favorite: false
+};
+
+function openAddModal() {
+  state.editingId = null;
+
+  formState = {
+    site: '',
+    url: '',
+    username: '',
+    password: '',
+    notes: '',
+    favorite: false
+  };
+
+  document.getElementById('modalTitle').textContent = 'Add Password';
+
+  fillFormInputs();
+
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function openEditModal(password) {
+  state.editingId = password.id;
+
+  formState = {
+    site: password.site,
+    url: password.url,
+    username: password.username,
+    password: password.password,
+    notes: password.notes,
+    favorite: password.favorite
+  };
+
+  document.getElementById('modalTitle').textContent = 'Edit Password';
+
+  fillFormInputs();
+
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function fillFormInputs() {
+  document.getElementById('formSite').value = formState.site;
+  document.getElementById('formUrl').value = formState.url;
+  document.getElementById('formUsername').value = formState.username;
+  document.getElementById('formPassword').value = formState.password;
+  document.getElementById('formNotes').value = formState.notes;
+
+  document.getElementById('formPassword').type = 'password';
+
+  updateFavToggleUI();
+  updateFormStrengthUI();
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function updateFavToggleUI() {
+  const button = document.getElementById('formFavToggle');
+
+  if (formState.favorite) {
+    button.classList.add('active');
+  } else {
+    button.classList.remove('active');
+  }
+}
+
+function updateFormStrengthUI() {
+  const strength = computeStrength(formState.password);
+
+  const bar = document.getElementById('formStrengthFill');
+  const label = document.getElementById('formStrengthLabel');
+
+  bar.style.width = strength.pct + '%';
+  bar.style.background = strength.color;
+
+  label.textContent = strength.label;
+  label.style.color = strength.color;
+}
+
+function savePassword() {
+  if (
+    !formState.site.trim() ||
+    !formState.username.trim() ||
+    !formState.password.trim()
+  ) {
+    addToast('Please fill in site, username and password', true);
+    return;
+  }
+
+  if (state.editingId) {
+    const password = state.passwords.find(function (item) {
+      return item.id === state.editingId;
+    });
+
+    if (password) {
+      password.site = formState.site;
+      password.url = formState.url;
+      password.username = formState.username;
+      password.password = formState.password;
+      password.notes = formState.notes;
+      password.favorite = formState.favorite;
+      password.updatedAt = Date.now();
+    }
+
+    addToast('Password updated');
+  } else {
+    const newPassword = {
+      id: uid(),
+      site: formState.site,
+      url: formState.url,
+      username: formState.username,
+      password: formState.password,
+      notes: formState.notes,
+      favorite: formState.favorite,
+      updatedAt: Date.now()
+    };
+
+    state.passwords.unshift(newPassword);
+
+    addToast('Password saved');
+  }
+
+  persist();
+  closeModal();
+  render();
+}
+
+
+// Password generator
+
+function genPassword(options) {
+  let characters = '';
+
+  if (options.lower) {
+    characters += 'abcdefghijklmnopqrstuvwxyz';
+  }
+
+  if (options.upper) {
+    characters += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  }
+
+  if (options.numbers) {
+    characters += '0123456789';
+  }
+
+  if (options.symbols) {
+    characters += '!@#$%^&*()_+-=[]{}';
+  }
+
+  if (!characters) {
+    characters = 'abcdefghijklmnopqrstuvwxyz';
+  }
+
+  let password = '';
+
+  for (let i = 0; i < options.length; i++) {
+    const number = crypto.getRandomValues(new Uint32Array(1))[0];
+
+    password += characters[number % characters.length];
+  }
+
+  return password;
+}
+
+function regenerate() {
+  state.genPreview = genPassword(state.genOptions);
+
+  document.getElementById('genPreview').textContent =
+    state.genPreview;
+}
