@@ -191,3 +191,110 @@ function render() {
     document.getElementById('emptyState').style.display = 'none';
     }
 }
+
+//  helper stuff
+
+function avatarFor(site) {
+  let hash = 0;
+
+  for (let i = 0; i < site.length; i++) {
+    hash = hash * 31 + site.charCodeAt(i);
+  }
+
+  hash = Math.abs(hash);
+
+  return {
+    color: PALETTE[hash % PALETTE.length],
+    letter: site.trim()[0]?.toUpperCase() || '?'
+  };
+}
+
+function computeStrength(password) {
+  if (!password) {
+    return {
+      label: '—',
+      color: 'var(--text-muted)',
+      pct: 0
+    };
+  }
+
+  let score = 0;
+
+  if (password.length >= 8) score++;
+  if (password.length >= 12) score++;
+
+  if (/[a-z]/.test(password)) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+
+  if (score <= 2) {
+    return {
+      label: 'Weak',
+      color: '#EF4444',
+      pct: 30
+    };
+  }
+
+  if (score <= 4) {
+    return {
+      label: 'Medium',
+      color: '#EAB308',
+      pct: 65
+    };
+  }
+
+  return {
+    label: 'Strong',
+    color: '#22C55E',
+    pct: 100
+  };
+}
+
+function relativeTime(timestamp) {
+  const minutes = Math.floor((Date.now() - timestamp) / 60000);
+
+  if (minutes < 1) return 'Just now';
+  if (minutes < 60) return minutes + 'm ago';
+
+  const hours = Math.floor(minutes / 60);
+
+  if (hours < 24) return hours + 'h ago';
+
+  const days = Math.floor(hours / 24);
+
+  if (days < 30) return days + 'd ago';
+
+  return Math.floor(days / 30) + 'mo ago';
+}
+
+function addToast(message, error) {
+  const stack = document.getElementById('toastStack');
+
+  const toast = document.createElement('div');
+  toast.className = error ? 'toast err' : 'toast ok';
+
+  const icon = error
+    ? '✕'
+    : '✓';
+
+  toast.innerHTML =
+    '<span>' + icon + '</span>' +
+    '<span class="toast-msg">' + message + '</span>';
+
+  stack.appendChild(toast);
+
+  setTimeout(function () {
+    toast.remove();
+  }, 2500);
+}
+
+function copyText(text, name) {
+  navigator.clipboard.writeText(text)
+    .then(function () {
+      addToast(name + ' copied to clipboard');
+    })
+    .catch(function () {
+      addToast('Copy failed', true);
+    });
+}
