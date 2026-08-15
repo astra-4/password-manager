@@ -667,4 +667,289 @@ function confirmYes() {
   cancelConfirm();
 
   render();
-} 
+}
+
+
+// main stuff
+
+function init() {
+  loadState();
+
+  // Set the starting theme
+  if (state.darkMode) {
+    document.body.className = 'dark';
+  } else {
+    document.body.className = 'light';
+  }
+
+
+  // master pass
+  if (state.masterSet) {
+    document.getElementById('masterHint').textContent =
+      'A master password is set. You can change it below.';
+
+    document.getElementById('masterSaveBtn').textContent =
+      'Update master password';
+  }
+
+
+  // auto generate
+  regenerate();
+
+
+  // nav
+  document.querySelectorAll('.nav-item').forEach(function (button) {
+    button.addEventListener('click', function () {
+      state.view = button.dataset.view;
+      render();
+    });
+  });
+
+
+  // search
+  document.getElementById('searchInput')
+    .addEventListener('input', function (event) {
+      state.search = event.target.value;
+      render();
+    });
+
+
+  // add pass
+  document.getElementById('addBtn')
+    .addEventListener('click', openAddModal);
+
+  document.getElementById('emptyCta')
+    .addEventListener('click', openAddModal);
+
+
+  // Modal buttons
+  document.getElementById('modalCloseBtn')
+    .addEventListener('click', closeModal);
+
+  document.getElementById('modalCancelBtn')
+    .addEventListener('click', closeModal);
+
+  document.getElementById('modalOverlay')
+    .addEventListener('click', function (event) {
+      if (event.target.id === 'modalOverlay') {
+        closeModal();
+      }
+    });
+
+
+  // form fields
+  document.getElementById('formSite')
+    .addEventListener('input', function (event) {
+      formState.site = event.target.value;
+    });
+
+  document.getElementById('formUrl')
+    .addEventListener('input', function (event) {
+      formState.url = event.target.value;
+    });
+
+  document.getElementById('formUsername')
+    .addEventListener('input', function (event) {
+      formState.username = event.target.value;
+    });
+
+  document.getElementById('formPassword')
+    .addEventListener('input', function (event) {
+      formState.password = event.target.value;
+      updateFormStrengthUI();
+    });
+
+  document.getElementById('formNotes')
+    .addEventListener('input', function (event) {
+      formState.notes = event.target.value;
+    });
+
+
+  // show/hide password
+  document.getElementById('formPassToggle')
+    .addEventListener('click', function () {
+      const input = document.getElementById('formPassword');
+
+      if (input.type === 'password') {
+        input.type = 'text';
+      } else {
+        input.type = 'password';
+      }
+    });
+
+
+  // fav button
+  document.getElementById('formFavToggle')
+    .addEventListener('click', function () {
+      formState.favorite = !formState.favorite;
+      updateFavToggleUI();
+    });
+
+
+  // save password
+  document.getElementById('modalSaveBtn')
+    .addEventListener('click', savePassword);
+
+
+  // generator open/close
+  document.getElementById('genToggleBtn')
+    .addEventListener('click', function () {
+      state.showGenPanel = !state.showGenPanel;
+
+      const panel = document.getElementById('genPanel');
+
+      if (state.showGenPanel) {
+        panel.style.display = 'flex';
+        regenerate();
+      } else {
+        panel.style.display = 'none';
+      }
+    });
+
+
+  // Generate another password
+  document.getElementById('genRefreshBtn')
+    .addEventListener('click', regenerate);
+
+
+  // Copy generated password
+  document.getElementById('genCopyBtn')
+    .addEventListener('click', function () {
+      copyText(state.genPreview, 'Password');
+    });
+
+
+  // generator length
+  document.getElementById('genLength')
+    .addEventListener('input', function (event) {
+      state.genOptions.length =
+        Number(event.target.value);
+
+      document.getElementById('genLengthValue').textContent =
+        state.genOptions.length;
+
+      regenerate();
+    });
+
+
+  // generator checkboxes
+  const generatorBoxes = [
+    'genUpper',
+    'genLower',
+    'genNumbers',
+    'genSymbols'
+  ];
+
+  generatorBoxes.forEach(function (id) {
+    document.getElementById(id)
+      .addEventListener('change', function (event) {
+        const name = id.replace('gen', '').toLowerCase();
+
+        state.genOptions[name] = event.target.checked;
+
+        regenerate();
+      });
+  });
+
+
+  // put generated password into form
+  document.getElementById('genUseBtn')
+    .addEventListener('click', function () {
+      formState.password = state.genPreview;
+
+      document.getElementById('formPassword').value =
+        state.genPreview;
+
+      updateFormStrengthUI();
+
+      state.showGenPanel = false;
+
+      document.getElementById('genPanel').style.display =
+        'none';
+    });
+
+
+  // confirmation dialog
+  document.getElementById('confirmCancelBtn')
+    .addEventListener('click', cancelConfirm);
+
+  document.getElementById('confirmYesBtn')
+    .addEventListener('click', confirmYes);
+
+  document.getElementById('confirmOverlay')
+    .addEventListener('click', function (event) {
+      if (event.target.id === 'confirmOverlay') {
+        cancelConfirm();
+      }
+    });
+
+
+  // settings
+  document.getElementById('darkModeToggle')
+    .addEventListener('click', toggleDarkMode);
+
+  document.getElementById('masterSaveBtn')
+    .addEventListener('click', saveMasterPassword);
+
+  document.getElementById('exportBtn')
+    .addEventListener('click', exportData);
+
+  document.getElementById('clearAllBtn')
+    .addEventListener('click', requestClearAll);
+
+
+  // import file
+  document.getElementById('importInput')
+    .addEventListener('change', function (event) {
+      const file = event.target.files[0];
+
+      if (file) {
+        importFile(file);
+      }
+
+      event.target.value = '';
+    });
+
+
+  // shortcuts
+  window.addEventListener('keydown', function (event) {
+    const active = document.activeElement;
+    const tag = active ? active.tagName : '';
+
+    //  / to search
+    if (
+      event.key === '/' &&
+      tag !== 'INPUT' &&
+      tag !== 'TEXTAREA'
+    ) {
+      event.preventDefault();
+
+      document.getElementById('searchInput').focus();
+    }
+
+    // esc closes things
+    if (event.key === 'Escape') {
+      const confirmOpen =
+        document.getElementById('confirmOverlay')
+          .classList.contains('open');
+
+      const modalOpen =
+        document.getElementById('modalOverlay')
+          .classList.contains('open');
+
+      if (confirmOpen) {
+        cancelConfirm();
+      } else if (modalOpen) {
+        closeModal();
+      }
+    }
+  });
+
+
+  //  render
+  render();
+}
+
+
+// start app
+document.addEventListener('DOMContentLoaded', init);
