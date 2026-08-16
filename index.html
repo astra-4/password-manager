@@ -22,7 +22,7 @@
                 </div>
 
                 <button class="nav-item active" data-view="dashboard">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14"y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
                     <span class="nav-label">Dashboard</span>
                 </button>
 
@@ -54,7 +54,7 @@
                         <div class="search-box">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                             <input type="text" id="searchInput" placeholder="search passwords">
-                            <kbd class="key-hint"></kbd>
+                            <kbd class="key-hint">/</kbd>
                         </div>
                         <button class="btn-primary" id="addBtn">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -64,7 +64,7 @@
                 </header>
                 <div class="content" id="content">
                     <!-- dashboard stats -->
-                     <div class="starts-grid" id="statsGrid" style="display:none;">
+                     <div class="stats-grid" id="statsGrid" style="display:none;">
                         <div class="stat-card">
                             <div class="stat-label">Total Passwords</div>
                             <div class="stat-value" id="statTotal">0</div>
@@ -87,8 +87,8 @@
                      </div>
 
                      <!-- settings view -->
-                      <div class="settings-view" id="settingsView" style="display:none";>
-                        <div div calss="settings-card">
+                        <div class="settings-view" id="settingsView" style="display:none;">
+                        <div class="settings-card">
                             <div class="settings-title">Master Password</div>
                             <div class="settings-hint" id="masterHint">Set a master password to protect your local vault (demo only, not enforced on unlock).</div>
                             <div class="settings-form">
@@ -168,6 +168,7 @@
                         <div class="strength-bar"><div class="strength-fill" id="formStrengthFill"></div></div>
                         <div class="strength-label" id="formStrengthLabel">—</div>
                     </div>
+                    </div>
 
                     <!--generator panel for generate password-->
                     <div class="gen-panel" id="genPanel" style="display:none">
@@ -227,7 +228,7 @@
                 <!--toasts-->
                 <div class="toast-stack" id="toastStack"></div>
              </div>
+            </div>
              <script src="app.js"></script>
-        </div>
     </body>
 </html>
