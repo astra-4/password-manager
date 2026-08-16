@@ -35,7 +35,7 @@ function seedData() {
         { id: 'p4', site: 'Troppa', url: 'troppa.com', username: 'tungtungsahur@gmail.com', password: '67676766767', notes: 'shared with six friends', favorite: true, updatedAt: now - 11 * 60000 },
         { id: 'p5', site: 'Cappuccina', url: 'cappuccina.com', username: 'tungtungsahur@gmail.com', password: '67676766767', notes: '', favorite: false, updatedAt: now - 94 * day },
         { id: 'p6', site: 'Tralalero Bank', url: 'secure.tralalero.com', username: 'triple.t', password: '67676766767!', notes: 'six seven', favorite: true, updatedAt: now - 3 * 3600000 },
-        { id: 'p8', site: 'Bombardino Air Lines', url: 'bombardino.com', username: 'tungtungsahur@gmail.com', password: 'bombardinoairlinespassword67', notes: '67?', favorite: false, updatedAt: now - 63 * day },
+        { id: 'p7', site: 'Bombardino Air Lines', url: 'bombardino.com', username: 'tungtungsahur@gmail.com', password: 'bombardinoairlinespassword67', notes: '67?', favorite: false, updatedAt: now - 63 * day },
     ];
 }
 
@@ -54,7 +54,7 @@ function loadState() {
         state.passwords = seedData();
     }
     const savedDark = localStorage.getItem('lpm_dark_mode');
-    if (savedDark !== null)state.darkMode = savedDark = 'true';
+    if (savedDark !== null) state.darkMode = savedDark === 'true';
     state.masterSet = localStorage.getItem('lpm_master_set')==='true';
 }
 
@@ -63,7 +63,7 @@ function getFilteredList() {
     let base = state.passwords;
     if (state.view==='favorites') base = base.filter(p => p.favorite);
     const q = state.search.trim().toLowerCase();
-    if (q) base = base.filter(p => p.site.toLowerCase().incldues(q) || p.username.toLowerCase().incldues(q) || p.url.toLowerCase().includes(q));
+    if (q) base = base.filter(p => p.site.toLowerCase().includes(q) || p.username.toLowerCase().includes(q) || p.url.toLowerCase().includes(q));
     base=[...base].sort((a,b) => b.updatedAt - a.updatedAt);
     if (state.view === 'dashboard') base = base.slice(0,5);
     return base;
@@ -124,10 +124,10 @@ function renderCard(p) {
         persist();
         render();
     });
-    card.querySelector('.copy-user-btn').addEventListener('click', () => copyText(p.username,'Usesrname'));
+    card.querySelector('.copy-user-btn').addEventListener('click', () => copyText(p.username,'Username'));
     card.querySelector('.copy-pass-btn').addEventListener('click', () => copyText(p.password,'Password'));
-    card.querySelector('.toggle-visible.btn').addEventListener('click', () => {
-        state.visibleIds = state.visibleIds.incldues(p.id) ? state.visibleIds.filter(x => x !== p.id) : [...state.visibleIds.p.id];
+    card.querySelector('.toggle-visible-btn').addEventListener('click', () => {
+        state.visibleIds = state.visibleIds.includes(p.id) ? state.visibleIds.filter(x => x !== p.id) : [...state.visibleIds, p.id];
         render();
     });
     card.querySelector('.edit-btn').addEventListener('click', () => openEditModal(p));
