@@ -1,5 +1,5 @@
 //constnts and stuff
-const PALETTE = ['#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#06B6D4', '#EF4444', '#84CC16'];
+const PALETTE = ['#7a6a52', '#4f6b70', '#8a5a4a', '#5d6a4e', '#6b5570', '#3f5a6b', '#8a7340', '#55607a'];
 
 let state = {
     passwords: [],
@@ -231,7 +231,7 @@ function computeStrength(password) {
   if (score <= 2) {
     return {
       label: 'Weak',
-      color: '#EF4444',
+      color: '#b4483c',
       pct: 30
     };
   }
@@ -239,14 +239,14 @@ function computeStrength(password) {
   if (score <= 4) {
     return {
       label: 'Medium',
-      color: '#EAB308',
+      color: '#b8873b', 
       pct: 65
     };
   }
 
   return {
     label: 'Strong',
-    color: '#22C55E',
+    color: '#5f8a56',
     pct: 100
   };
 }
