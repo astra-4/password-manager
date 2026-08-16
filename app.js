@@ -37,7 +37,7 @@ function seedData() {
         { id: 'p6', site: 'Tralalero Bank', url: 'secure.tralalero.com', username: 'triple.t', password: '67676766767!', notes: 'six seven', favorite: true, updatedAt: now - 3 * 3600000 },
         { id: 'p7', site: 'Bombardino Air Lines', url: 'bombardino.com', username: 'tungtungsahur@gmail.com', password: 'bombardinoairlinespassword67', notes: '67?', favorite: false, updatedAt: now - 63 * day },
     ];
-}
+} 
 
 function persist() {
     localStorage.setItem('lpm_passwords', JSON.stringify(state.passwords));
