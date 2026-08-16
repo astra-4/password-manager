@@ -493,6 +493,16 @@ body.light {
     max-width: 100%;
     max-height: 88vh;
     overflow: auto;
+    background: var(--modal-bg);
+    padding: 20px;
+}
+
+.toast {
+    background: var(--modal-bg);
+}
+
+.gen-panel {
+    background: var(--input-bg);
 }
 
 .gen-checks {
@@ -511,6 +521,7 @@ body.light {
     display: grid;
     place-items: center;
     color: #EF4444;
+    background: rgba(239,68,68,0.12);
 }
 
 .toast-stack {
